@@ -1,0 +1,36 @@
+--Create a store database
+
+CREATE TABLE clothing_store (id INTEGER PRIMARY KEY, item TEXT, color TEXT, material TEXT, price INTEGER);
+
+INSERT INTO clothing_store 
+VALUES (1,'t-shrit','red','cotton',10),
+    (2,'t-shirt','blue','polyester',15),
+    (3,'pants','blue','jeans',30),
+    (4,'pants','tan','khaki',20),
+    (5,'shorts','blue','jeans',20),
+    (6,'shorts','black','jeans',20),
+    (7,'dress','black','cotton',35),
+    (8,'dress','red','cotton',35),
+    (9,'dress','black','satin',45),
+    (10,'blouse','red','satin',25),
+    (11,'blouse','blue','satin',25),
+    (12,'socks','blue','cotton',5),
+    (13,'socks','tan','cotton',5),
+    (14,'socks','black','cotton',5),
+    (15,'socks','red','cotton',5);
+
+--Display database
+SELECT * FROM clothing_store;
+
+--Display database ordered by price
+SELECT * FROM clothing_store ORDER BY price;
+
+--How many items do we have with each type of materail?
+SELECT material, COUNT(material)
+FROM clothing_store
+GROUP BY material;
+
+--What is the average price for a dress?
+SELECT AVG(price) AS avg_price
+FROM clothing_store
+WHERE item='dress';
