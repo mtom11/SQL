@@ -3,21 +3,21 @@
 CREATE TABLE clothing_store (id INTEGER PRIMARY KEY, item TEXT, color TEXT, material TEXT, price INTEGER);
 
 INSERT INTO clothing_store 
-VALUES (1,'t-shrit','red','cotton',10),
-    (2,'t-shirt','blue','polyester',15),
-    (3,'pants','blue','jeans',30),
-    (4,'pants','tan','khaki',20),
-    (5,'shorts','blue','jeans',20),
-    (6,'shorts','black','jeans',20),
-    (7,'dress','black','cotton',35),
-    (8,'dress','red','cotton',35),
-    (9,'dress','black','satin',45),
-    (10,'blouse','red','satin',25),
-    (11,'blouse','blue','satin',25),
-    (12,'socks','blue','cotton',5),
-    (13,'socks','tan','cotton',5),
-    (14,'socks','black','cotton',5),
-    (15,'socks','red','cotton',5);
+VALUES (1,'t-shirt','red','cotton',10,4),
+    (2,'t-shirt','blue','polyester',15,5),
+    (3,'pants','blue','jeans',30,3),
+    (4,'pants','tan','khaki',20,2),
+    (5,'shorts','blue','jeans',20,5),
+    (6,'shorts','black','jeans',20,5),
+    (7,'dress','black','cotton',35,4),
+    (8,'dress','red','cotton',35,2),
+    (9,'dress','black','satin',45,5),
+    (10,'blouse','red','satin',25,3),
+    (11,'blouse','blue','satin',25,4),
+    (12,'socks','blue','cotton',5,4),
+    (13,'socks','tan','cotton',5,5),
+    (14,'socks','black','cotton',5,4),
+    (15,'socks','red','cotton',5,5);
 
 --Display database
 SELECT * FROM clothing_store;
@@ -34,3 +34,14 @@ GROUP BY material;
 SELECT AVG(price) AS avg_price
 FROM clothing_store
 WHERE item='dress';
+
+--What is the average rating for a dress?
+SELECT AVG(rating) AS avg_rating
+FROM clothing_store
+WHERE item='dress';
+
+--What are the average ratings for each item and what is the most popular item?
+SELECT item, AVG(rating) AS avg_rating
+FROM clothing_store
+GROUP BY item
+ORDER BY avg_rating DESC;
