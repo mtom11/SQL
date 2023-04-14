@@ -90,11 +90,24 @@ SELECT actors.name, hobbies.hobby
 FROM actors
 JOIN hobbies
 ON actors.id = hobbies.actor_id
-WHERE hobby IN ('music', 'surfing', 'travelling', 'video games', 'yoga')
+WHERE hobby IN (SELECT hobby FROM hobbies GROUP BY hobby HAVING COUNT(*) >1)
 ORDER BY hobby;
 
+--Which hobbies are listed the most?
 SELECT COUNT(*), hobby
 FROM hobbies
 GROUP BY hobby
 HAVING COUNT(*) > 1
 ORDER BY COUNT(*) DESC; 
+
+--Which movies listed have Natalie Portman in them?
+SELECT title
+FROM movies
+Where actor_name = 'Natalie Portman' OR co_star = 'Natalie Portman';
+
+--How old was Natalie Portman when Black Swan came out?
+SELECT name, birthdate, movies.title, movies.release_year, 2010-1981 AS age_when_released
+FROM actors
+JOIN movies
+ON movies.actor_name = name OR movies.co_star = name
+WHERE name = 'Natalie Portman' AND title = 'Black Swan';
