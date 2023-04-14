@@ -1,0 +1,100 @@
+CREATE TABLE actors (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, birthdate TEXT, age INTEGER, current_spouse TEXT, former_spouse TEXT);
+
+INSERT INTO actors (name, birthdate, age, current_spouse, former_spouse) VALUES 
+('Angelina Jolie', 'June 4, 1975', 47, NULL, 'Brad Pitt'),
+('Brad Pitt', 'December 18, 1963', 59, NULL, 'Angelina Jolie'),
+('Jennifer Aniston', 'February 11, 1969', 54, NULL, 'Justin Theroux'),
+('Keanu Reeves', 'September 2, 1964', 58, 'Alexandra Grant', 'Jennifer Syme'),
+('Johnny Depp', 'June 9, 1963', 59, NULL, 'Winona Ryder'),
+('Ashton Kutcher', 'February 7, 1978', 45, 'Mila Kunis', 'Demi Moore'),
+('Mila Kunis', 'August 14, 1983', 39, 'Ashton Kutcher', NULL),
+('Demi Moore', 'November 11, 1962', 60, NULL, 'Ashton Kutcher'),
+('Martin Lawrence', 'April 16, 1965', 57, NULL, 'Shamicka Gibbs'),
+('Natalie Portman', 'June 9, 1981', 41, 'Benjamin Millepied', NULL),
+('Chris Hemsworth', 'August 11, 1983', 39, 'Elsa Pataky', NULL),
+('Winona Ryder', 'October 29, 1971', 51, 'Scott Mackinlay Hahn', 'Johnny Depp');
+
+
+CREATE TABLE movies (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, release_year INTEGER, actor_name TEXT, co_star TEXT, rating INTEGER);
+
+INSERT INTO movies (title, release_year, actor_name, co_star, rating) VALUES
+('Open Season', 2006, 'Ashton Kutcher', 'Martin Lawrence', 49),
+('Jobs', 2013, 'Ashton Kutcher', 'Dermot Mulroney', 28),
+('Black Swan', 2010, 'Natalie Portman', 'Mila Kunis', 85),
+('Thor: Love and Thunder', 2022, 'Chris Hemsworth', 'Natalie Portman', 63),
+('Maleficent', 2014, 'Angelina Jolie', 'Elle Fanning', 54),
+('Girl, Interrupted', 1999, 'Winona Ryder', 'Angelina Jolie', 53),
+('Pirates of the Caribbean: Dead Men Tell No Tales', 2017, 'Johnny Depp', 'Geoffrey Rush', 30),
+('Babylon', 2022, 'Brad Pitt', 'Margot Robbie', 56),
+('Bullet Train', 2022, 'Brad Pitt', 'Joey King', 54),
+('Cake', 2014, 'Jennifer Aniston', 'Adriana Barraza', 49),
+("Mother's Day", 2016, 'Jennifer Aniston', 'Kate Hudson', 8),
+('John Wick', 2014, 'Keanu Reeves', 'Michael Nyqvist', 86),
+('The Matrix', 1999, 'Keanu Reeves', 'Laurence Fishburne', 88),
+('Pirates of the Caribbean: The Curse of the Black Pearl', 2003, 'Johnny Depp', 'Orlando Bloom', 80),
+('The Hunchback of Notre Dame', 1996, 'Tom Hulce', 'Demi Moore', 71);
+
+
+CREATE TABLE hobbies (id INTEGER PRIMARY KEY AUTOINCREMENT, hobby TEXT, actor_id INTEGER);
+
+INSERT INTO hobbies (hobby, actor_id) VALUES
+('yoga', 8),
+('reading', 1),
+('travelling', 1),
+('swimming', 2),
+('playing music', 2),
+('yoga', 3),
+('meditation', 3),
+('riding motorcycles', 4),
+('ballroom dancing', 4),
+('soccer', 4),
+('music', 5),
+('painting', 5),
+('music', 6),
+('video games', 6),
+('working out', 6),
+('video games', 7),
+('travelling', 9),
+('music', 9),
+('dancing', 10),
+('diving',10),
+('surfing', 11),
+('music', 11),
+('surfing', 4);
+
+
+
+SELECT * FROM actors;
+
+--Are any actors married to each other?
+SELECT actors.name, actors.current_spouse
+FROM actors
+JOIN actors AS a
+ON actors.current_spouse = a.name;
+
+--Are any actors formerly married to each other?
+SELECT actors.name, actors.former_spouse
+FROM actors
+JOIN actors AS a
+ON actors.former_spouse = a.name;
+
+--What hobbies do the actors have?
+SELECT actors.name, hobby
+FROM actors
+LEFT JOIN hobbies
+ON actors.id = hobbies.actor_id
+ORDER BY actors.name;
+
+--What hobbies do the actors have in common?
+SELECT actors.name, hobbies.hobby
+FROM actors
+JOIN hobbies
+ON actors.id = hobbies.actor_id
+WHERE hobby IN ('music', 'surfing', 'travelling', 'video games', 'yoga')
+ORDER BY hobby;
+
+SELECT COUNT(*), hobby
+FROM hobbies
+GROUP BY hobby
+HAVING COUNT(*) > 1
+ORDER BY COUNT(*) DESC; 
