@@ -1,0 +1,39 @@
+--In this SQL code, I'm querying a database that's holding Nexflix data to answer questions about the data. 
+
+
+--Show titles with their directors and cast
+SELECT nti.show_id, nti.title, np.director, np.cast
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" AS nti
+JOIN "CharlotteChaze/BreakIntoTech"."netflix_people" AS np
+    ON np.show_id = nti.show_id;
+
+--How many movie titles are there in the database? (movies only, not tv shows)
+SELECT COUNT (*)
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+WHERE type = 'Movie';
+--6131
+
+--When was the most recent batch of tv shows and/or movies added to the database?
+SELECT MAX(date_added)
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info";
+--2021-09-25
+
+--List all the movies and tv shows in alphabetical order.
+SELECT title
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+ORDER BY title ASC;
+
+--Who was the Director for the movie Bright Star?
+SELECT title, director
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" AS nti
+JOIN "CharlotteChaze/BreakIntoTech"."netflix_people" AS np
+    ON np.show_id = nti.show_id
+WHERE title = 'Bright Star';
+--Jane Campion
+
+--What is the oldest movie in the database and what year was it made?
+SELECT title, release_year
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+ORDER BY release_year 
+LIMIT 5;
+--Pioneers: First Women Filmmakers* 1925
