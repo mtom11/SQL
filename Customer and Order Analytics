@@ -81,3 +81,44 @@ SELECT product, SUM(quantity) AS total_quantity
 FROM febsales
 WHERE location LIKE '%Los Angeles%'
 GROUP BY product;
+
+--Which locations in New York received at least 3 orders in January, and how many orders did they each receive?
+SELECT location, COUNT(orderid) AS orders
+FROM jansales
+WHERE location LIKE '%NY%'
+    AND length(orderid) = 6 
+    AND orderid <> 'Order ID'
+GROUP BY location
+HAVING COUNT(orderid) >= 3;
+
+--How many of each type of headphone were sold in February?
+SELECT product, SUM(quantity) AS total_quantity
+FROM febsales
+WHERE product LIKE '%headphone%'
+GROUP BY product;
+
+--What was the average amount spent per account in February?
+SELECT SUM(quantity*price)/COUNT(c.acctnum) AS avg_spent_per_acct
+FROM febsales AS feb
+LEFT JOIN customers AS c
+ON c.order_id = feb.orderid
+WHERE length(orderid) = 6
+    AND orderid <> 'Order ID';
+--190.00
+    
+--What was the average quantity of products purchased per account in February?
+SELECT SUM(quantity)/COUNT(acctnum) AS avg_quantity
+FROM febsales AS feb
+JOIN customers AS c
+ON c.order_id = feb.orderid
+WHERE length(orderid) = 6 
+AND orderid <> 'Order ID';
+--1
+
+--Which product brought in the most revenue in January and how much revenue did it bring in total?
+SELECT product, SUM(quantity*price) AS revenue
+FROM jansales
+GROUP BY product
+ORDER BY revenue DESC
+LIMIT 3;
+--Macbook Pro Laptop
