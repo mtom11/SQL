@@ -67,3 +67,20 @@ FROM spotifydata
 ORDER BY popularity DESC
 LIMIT 5;
 --3 songs tied at 95, good 4 u, Bad Habits, and Woman
+
+
+--Next, I created a CTE in order to see the average popularity of all the artists 
+--and created an extra column using CASE to tag them based on if they are a "Top Star" or not.
+WITH avg_pop AS (
+    SELECT artist_name, AVG(popularity) AS avg_popularity
+    FROM spotifydata
+    GROUP BY artist_name)
+
+SELECT *, 
+CASE
+    WHEN avg_popularity >= 90 THEN 'Top Star'
+    WHEN avg_popularity >= 80 THEN 'Star'
+    ELSE 'Meh'
+    END AS stardom
+FROM avg_pop
+ORDER BY avg_popularity DESC;
