@@ -1,0 +1,198 @@
+--In this project, I downloaded a database of music and music sales and performed a variety of analylitics to explore the data and find out information such as, 
+--which sales representatives serve which customers, total sales, and which genre sells the most.
+--I had a lot of fun with multiple joins in this project. Most of the tables are related in some way, although you need to join some three or more different ways to obtain the information you are looking for.
+
+--First I explored the employees table and found that all of the employees are based in Canada.
+
+SELECT firstname, lastname, title, city, country
+FROM chinook.employees;
+
+--Then I explored the customers table and looked into the customers not based in the United States
+
+SELECT customerid, firstname, lastname, country
+FROM chinook.customers
+WHERE country <> 'USA'
+ORDER BY country;
+
+
+--I created a list of all customers with their corresponding sales representative and contact info. I concatenated the first and last names together for easier readibility.
+
+SELECT c.firstname || ' ' || c.lastname AS customer_fullname, 
+    e.firstname || ' ' || e.lastname AS employee_rep_fullname,
+    e.phone AS rep_phone,
+    e.email AS rep_email
+FROM chinook.customers AS c
+LEFT JOIN chinook.employees AS e
+    ON c.supportrepid = e.employeeid
+ORDER BY c.lastname ASC;
+
+--Then I started coming up with questions for the data in order to analyze it further.
+
+--How many customers does each rep serve?
+
+SELECT employeeid, 
+    e.firstname || ' ' || e.lastname AS employee_fullname, 
+    title, 
+    COUNT(customerid) AS amount_of_customers
+FROM chinook.employees AS e
+LEFT JOIN chinook.customers AS c
+    ON c.supportrepid = e.employeeid
+WHERE title = 'Sales Support Agent'
+GROUP BY employeeid;
+
+
+--How many sales did each sales agent have in 2009?
+
+SELECT e.firstname || ' ' || e.lastname AS employee_fullname, 
+    COUNT(invoiceid) AS '2009_orders'
+FROM chinook.employees AS e
+LEFT JOIN chinook.customers AS c
+    ON c.supportrepid = e.employeeid
+LEFT JOIN chinook.invoices AS i
+    ON i.customerid = c.customerid
+WHERE e.title = 'Sales Support Agent'
+    AND i.invoicedate LIKE '2009%'
+GROUP BY employeeid
+ORDER BY COUNT(invoiceid) DESC;
+
+
+--Who has the most sales overall?
+
+SELECT e.firstname || ' ' || e.lastname AS employee_fullname, 
+    COUNT(invoiceid) AS orders
+FROM chinook.employees AS e
+LEFT JOIN chinook.customers AS c
+    ON c.supportrepid = e.employeeid
+LEFT JOIN chinook.invoices AS i
+    ON i.customerid = c.customerid
+WHERE e.title = 'Sales Support Agent'
+GROUP BY employeeid
+ORDER BY COUNT(invoiceid) DESC;
+
+--Jane Peacock
+
+
+--What were the total sales for 2009?
+
+SELECT COUNT(*) AS total_sales
+FROM chinook.invoices
+WHERE invoicedate LIKE '2009%';
+
+--83
+
+
+--What were the min, max, average, and overall total for sales made in 2009?
+
+SELECT MIN(total) AS min_sale, 
+    MAX(total) AS max_sale, 
+    ROUND(AVG(total), 2) AS avg_sale, 
+    ROUND(SUM(total), 2) AS overall_total
+FROM chinook.invoices
+WHERE invoicedate LIKE '2009%';
+
+
+--What were the total orders, average sales, and total sales for each Sales Agent in 2009? Which Sales Agent sold the most?
+
+SELECT e.firstname || ' ' || e.lastname AS employee_fullname, 
+    COUNT(invoiceid) AS orders, 
+    ROUND(AVG(total), 2) AS avg_sale, 
+    ROUND(SUM(total), 2) AS total_sale
+FROM chinook.employees AS e
+LEFT JOIN chinook.customers AS c
+    ON c.supportrepid = e.employeeid
+LEFT JOIN chinook.invoices AS i
+    ON i.customerid = c.customerid
+WHERE e.title = 'Sales Support Agent'
+    AND invoicedate LIKE '2009%'
+GROUP BY employeeid
+ORDER BY COUNT(invoiceid) DESC;
+
+--Steve Johnson
+
+
+--What genre sells the most? The least?
+
+SELECT genres.name, 
+    COUNT(invoice_items.invoiceid) AS total_sold
+FROM chinook.genres
+LEFT JOIN chinook.tracks 
+    ON tracks.genreid = genres.GenreId
+LEFT JOIN chinook.invoice_items 
+    ON invoice_items.trackid = tracks.trackid
+GROUP BY genres.name
+ORDER BY COUNT(invoice_items.invoiceid) DESC;
+
+--Most: Rock, Least: Opera
+
+
+--All of the invoices associated with each sales agent.
+
+SELECT e.firstname || ' ' || e.lastname AS fullname,
+    invoiceid,
+    invoicedate,
+    total
+FROM chinook.employees AS e
+LEFT JOIN chinook.customers AS c
+    ON c.SupportRepId = e.EmployeeId
+LEFT JOIN chinook.invoices AS i
+    ON c.CustomerId = i.CustomerId
+WHERE e.title = 'Sales Support Agent';
+
+
+--Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers. Who has spent the most? Where are they from?
+
+SELECT SUM(i.total) AS invoice_total, 
+    c.firstname || ' ' || c.lastname AS customer_fullname,
+    c.country, 
+    e.firstname || ' ' || e.lastname AS sales_rep
+FROM chinook.customers AS c
+LEFT JOIN chinook.invoices AS i
+    ON i.customerid = c.customerid
+LEFT JOIN chinook.employees AS e
+    ON e.employeeid = c.supportrepid
+GROUP BY c.customerid
+ORDER BY SUM(i.total) DESC;
+
+--Helena Holý, Czech Republic
+
+
+--I created a unique/distinct list of billing countries from the Invoice table.
+
+SELECT DISTINCT(billingcountry) AS billing_country
+FROM chinook.invoices
+ORDER BY billingcountry ASC;
+
+--I came up with a query that includes the purchased track name with each invoice line ID and who wrote the song.
+
+SELECT tracks.name, tracks.Composer, invoicelineid, tracks.TrackId
+FROM chinook.tracks
+JOIN chinook.invoice_items
+    ON invoice_items.TrackId = tracks.TrackId;
+
+--I found that some of the tracks have more than one invoice line id and some tracks have no composer listed.
+
+
+--I created a query that shows all the Tracks, and includes the Album name, Media type, and Genre.
+
+SELECT tracks.name AS track_name, 
+    albums.title AS album, 
+    media_types.name AS media_type, 
+    genres.name AS genre
+FROM chinook.tracks
+LEFT JOIN chinook.albums ON tracks.albumid = albums.AlbumId
+LEFT JOIN chinook.media_types ON media_types.MediaTypeId = tracks.MediaTypeId
+LEFT JOIN chinook.genres ON genres.GenreId = tracks.GenreId
+ORDER BY genres.name;
+
+
+--I joined the playlists table with the playlist_track table to see the number of tracks in each playlist and determine which playlist had the most tracks.
+
+SELECT playlists.name, COUNT(playlist_track.TrackId) AS number_of_tracks
+FROM playlists
+LEFT JOIN playlist_track ON playlist_track.PlaylistId = playlists.PlaylistId
+GROUP BY playlists.playlistid
+ORDER BY COUNT(playlist_track.TrackId) DESC;
+
+--Music had the most tracks.
+
+--Thank you so much for taking the time to look over my project.
